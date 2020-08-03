@@ -1,0 +1,6 @@
+# Default ignored files
+/.idea
+/results
+.DS_Store
+*.pyc
+
