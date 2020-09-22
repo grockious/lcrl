@@ -12,6 +12,7 @@ LCRL produces policies that are certified with respect to the LTL property.
 
 ## Publications
 * Hasanbeig, M. , Abate, A. and Kroening, D., "Cautious Reinforcement Learning with Logical Constraints", International Conference on Autonomous Agents and Multi-agent Systems, 2020. [[PDF]](http://ifaamas.org/Proceedings/aamas2020/pdfs/p483.pdf)
+* Hasanbeig, M. , Kroening, D. and Abate, A., "Deep Reinforcement Learning with Temporal Logics", International Conference on Formal Modeling and Analysis of Timed Systems, 2020. [[PDF]](https://link.springer.com/content/pdf/10.1007%2F978-3-030-57628-8_1.pdf)
 * Hasanbeig, M. , Kroening, D. and Abate, A., "Towards Verifiable and Safe Model-Free Reinforcement Learning", Workshop on Artificial Intelligence and Formal Verification, Logics, Automata and Synthesis (OVERLAY), 2020. [[PDF]](http://ceur-ws.org/Vol-2509/invited.pdf)
 * Hasanbeig, M. , Kantaros, Y., Abate, A., Kroening, D., Pappas, G. J., and Lee, I., "Reinforcement Learning for Temporal Logic Control Synthesis with Probabilistic Satisfaction Guarantees", IEEE Conference on Decision and Control, 2019. [[PDF]](https://arxiv.org/pdf/1909.05304.pdf)
 * Hasanbeig, M. , Abate, A. and Kroening, D., "Logically-Constrained Neural Fitted Q-Iteration", International Conference on Autonomous Agents and Multi-agent Systems, 2019. [[PDF]](https://arxiv.org/pdf/1809.07823.pdf)
