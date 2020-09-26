@@ -104,6 +104,8 @@ def main():
             current_state = learning.MDP.current_state + [learning.LDBA.automaton_state]
             if learning.epsilon_transitions_exists:
                 product_MDP_action_space = learning.action_space_augmentation()
+            else:
+                product_MDP_action_space = MDP.action_space
             Qs = []
             if str(current_state) in learning.Q.keys():
                 for action_index in range(len(product_MDP_action_space)):
