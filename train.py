@@ -1,12 +1,13 @@
+import os
+import random
+import numpy as np
+import argparse
 from environments.slippery_grid import SlipperyGrid
 from automata.ldba import LDBA
 from scripts.lcrl import LCRL
+from animator import animate
 import matplotlib.pyplot as plt
 from matplotlib import colors
-import argparse
-import random
-import numpy as np
-import os
 from datetime import datetime
 
 
@@ -138,6 +139,7 @@ def main():
         plt.savefig(
             os.path.join(results_sub_path, 'tested_policy_' + env + '_' + layout + '_' + temporal_property + '.png'))
         plt.show()
+        animate(learning.MDP, test_path, results_sub_path)
         print('---------------------------------\n')
         print('The results have been saved here:\n')
         print(results_sub_path)
