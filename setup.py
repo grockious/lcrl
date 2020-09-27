@@ -11,6 +11,8 @@ setup(
     install_requires=[
         'numpy',
         'matplotlib',
-        'dill>=0.3.2'
+        'dill>=0.3.2',
+        'imageio',
+        'tqdm'
     ]
 )
