@@ -14,11 +14,11 @@ def parse_args():
     parser = argparse.ArgumentParser()
     required_parse = parser.add_argument_group('required arguments')
     required_parse.add_argument('-env', '--env', metavar='ENVIRONMENT', required=True,
-                                help="choose an environment from the env set {SlipperyGrid}")
+                                help="choose an environment from the currently available env set {SlipperyGrid}, or alternatively define a custom one within '/environments' folder")
     required_parse.add_argument('-layout', '--layout', metavar='LAYOUT', required=True,
-                                help="choose a labelling function {SlipperyGrid: 'layout_1' or 'layout_2'}")
+                                help="choose a label map from the currently available layouts {SlipperyGrid: 'layout_1' or 'layout_2'}, or alternatively define a custom one inside the current environment file")
     required_parse.add_argument('-property', '--property', metavar='TEMPORAL_PROPERTY', required=True,
-                                help="list of available temporal properties {SlipperyGrid: 'g1-then-g2'(goal_1 then goal_2)}")
+                                help="choose a temporal properties from the currently available properties for each env {SlipperyGrid: 'g1-then-g2'(goal_1 then goal_2), 'g1-or-g2'(goal_1 or goal_2)}, or alternatively define a custom one inside automata/ldba.py")
     parser.add_argument('-save_dir', '--save_dir', metavar='SAVE DIRECTORY', default='./results', type=str,
                         help='Directory to save the results')
     parser.add_argument('-alg', '--algorithm', metavar='ALGORITHM', default='ql', type=str,
@@ -56,7 +56,7 @@ def main():
     test = hyper_parameters.test
     average_window = hyper_parameters.avgw
 
-    automaton = LDBA(0, temporal_property)
+    automaton = LDBA(automaton_state=0, temporal_property=temporal_property)
 
     # # # import custom env here # # #
     if env == 'SlipperyGrid':
