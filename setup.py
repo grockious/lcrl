@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='lcrl',
-    version='0.0.1',
+    version='0.0.2',
     keywords='rl, logic, environment, agent',
     url='https://github.com/grockious/lcrl',
     description='Logically-Constrained Reinforcement Learning',
