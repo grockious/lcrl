@@ -4,11 +4,10 @@
 
 # LCRL
 Logically-Constrained Reinforcement Learning (LCRL) is a model-free reinforcement learning framework to synthesise 
-policies for unknown, continuous-state Markov Decision Processes (MDPs) under a given Linear Temporal Logic
+policies for unknown, continuous-state-action Markov Decision Processes (MDPs) under a given Linear Temporal Logic
 (LTL) property. LCRL automatically shapes a synchronous reward function on-the-fly. This enables any
 off-the-shelf RL algorithm to synthesise policies that yield traces which probabilistically satisfy the LTL property. 
-This probability is calculated in parallel with the learning process when the MDP state space is finite.
-LCRL produces policies that are certified with respect to the LTL property.
+This probability is calculated in parallel with the learning process when the MDP state space is finite and LCRL produces policies that are certified to satisfy the LTL property with maximum probability.
 
 ## Publications
 * Hasanbeig, M. , Abate, A. and Kroening, D., "Cautious Reinforcement Learning with Logical Constraints", International Conference on Autonomous Agents and Multi-agent Systems, 2020. [[PDF]](http://ifaamas.org/Proceedings/aamas2020/pdfs/p483.pdf)
