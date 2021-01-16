@@ -27,7 +27,11 @@ cd lcrl
 pip3 install .
 ```
 
-Alternatively, you can directly use 
+Alternatively, you can directly use
+```
+pip3 lcrl
+```
+or
 ```
 pip3 install git+https://github.com/grockious/lcrl.git
 ```
