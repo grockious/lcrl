@@ -15,7 +15,7 @@ setup(
     description='Logically-Constrained Reinforcement Learning',
     packages=['automata', 'environments', 'scripts'],
     classifiers=[
-        "Provably-Correct RL :: Python :: 3",
+        "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
