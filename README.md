@@ -1,6 +1,7 @@
 <p align="center">
     <img width="200" src="assets/lcrl.png">
 </p>
+<!--- https://i.imgur.com/6Rf2GcE.png --->
 
 # LCRL
 Logically-Constrained Reinforcement Learning (LCRL) is a model-free reinforcement learning framework to synthesise 
@@ -37,7 +38,7 @@ pip3 install git+https://github.com/grockious/lcrl.git
 ```
 
 ## Usage
-#### <ins>Training an RL agent under an LTL property</ins>
+#### Training an RL agent under an LTL property
 A sample training command is:
 ```
 python3 train.py --env 'SlipperyGrid' --layout 'layout_1' --property 'g1-then-g2' 
@@ -51,7 +52,7 @@ The option `--layout` determines atomic proposition mapping within the environme
 and the option `--property` specifies the LTL property. 
 
 Use the `-h` option for help and to get a list of the available parameters.
-#### <ins>Applying LCRL to a black-box MDP and custom LTL property</ins>
+#### Applying LCRL to a black-box MDP and custom LTL property
 #### - MDP:
 LCRL can be connected to a black-box MDP object that is fully unknown to
 the tool. This includes the size of the state space as LCRL automatically keeps track of visited states. For examples of MDP classes
