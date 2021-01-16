@@ -29,7 +29,7 @@ pip3 install .
 
 Alternatively, you can directly use
 ```
-pip3 lcrl
+pip3 install lcrl
 ```
 or
 ```
