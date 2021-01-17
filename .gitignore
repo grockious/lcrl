@@ -1,6 +1,8 @@
 # Default ignored files
 /.idea
 /results
+/build
+/dist
+/lcrl.egg-info
 .DS_Store
 *.pyc
-
