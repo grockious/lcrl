@@ -45,10 +45,10 @@ python3 train.py --env 'SlipperyGrid' --layout 'layout_1' --property 'g1-then-g2
 ```
 where option `--env` specifies an environment object from the subdirectory
 ```
-./environments
+./lcrl/environments
 ```
 The option `--layout` determines atomic proposition mapping within the environment
-(the environments in `./environments` provide one or more layouts), 
+(the environments in `./lcrl/environments` provide one or more layouts), 
 and the option `--property` specifies the LTL property. 
 
 Use the `-h` option for help and to get a list of the available parameters.
@@ -56,7 +56,7 @@ Use the `-h` option for help and to get a list of the available parameters.
 #### - MDP:
 LCRL can be connected to a black-box MDP object that is fully unknown to
 the tool. This includes the size of the state space as LCRL automatically keeps track of visited states. For examples of MDP classes
-please refer to `./environments`. The MDP object, call it `MDP`, should at 
+please refer to `./lcrl/environments`. The MDP object, call it `MDP`, should at 
 least have the following methods:
 ```
 MDP.reset()
@@ -74,7 +74,7 @@ to output the label of `state`.
 #### - LTL:
 The LTL property has to be converted to an LDBA, which is a finite-state machine. 
 An excellent tool for this is OWL, which you can [try online](https://owl.model.in.tum.de/try/).
-The synthesised LDBA can be used as an object of the class `./automata/ldba.py`.  
+The synthesised LDBA can be used as an object of the class `./lcrl/automata/ldba.py`.  
 
 The constructed LDBA, call it `LDBA`, is expected to offer the following methods:
 ```
