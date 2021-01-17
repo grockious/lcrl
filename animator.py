@@ -5,7 +5,7 @@ import numpy as np
 import tqdm
 import time
 import imageio
-from environments.slippery_grid import SlipperyGrid
+from lcrl.environments.slippery_grid import SlipperyGrid
 
 
 def animate(mdp, executed_policy, dir_to_save):

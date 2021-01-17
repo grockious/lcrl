@@ -2,9 +2,9 @@ import os
 import random
 import numpy as np
 import argparse
-from environments.slippery_grid import SlipperyGrid
-from automata.ldba import LDBA
-from scripts.lcrl import LCRL
+from lcrl.environments.slippery_grid import SlipperyGrid
+from lcrl.automata.ldba import LDBA
+from lcrl.scripts.lcrl import LCRL
 from animator import animate
 import matplotlib.pyplot as plt
 from matplotlib import colors

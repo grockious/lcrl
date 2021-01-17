@@ -1,11 +1,11 @@
-from setuptools import setup
+import setuptools
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-setup(
+setuptools.setup(
     name='lcrl',
-    version='0.0.2',
+    version='0.0.4',
     author="Hosein Hasanbeig",
     author_email="hosein.hasanbeig@cs.ox.ac.uk",
     keywords='rl, logic, environment, agent',
@@ -13,7 +13,7 @@ setup(
     long_description_content_type="text/markdown",
     url='https://github.com/grockious/lcrl',
     description='Logically-Constrained Reinforcement Learning',
-    packages=['automata', 'environments', 'scripts'],
+    packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -28,5 +28,3 @@ setup(
         'tqdm'
     ]
 )
-
-
