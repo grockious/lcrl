@@ -1,10 +1,10 @@
 <p align="center">
-    <img width="200" src="assets/lcrl.png">
+    <img width="200" src="https://i.imgur.com/6Rf2GcE.png">
 </p>
 <!--- https://i.imgur.com/6Rf2GcE.png --->
 
 # LCRL
-Logically-Constrained Reinforcement Learning (LCRL) is a model-free reinforcement learning framework to synthesise 
+Logically-Constrained Reinforcement Learning (LCRL) is a model-free reinforcement learning framework to synthesise
 policies for unknown, continuous-state-action Markov Decision Processes (MDPs) under a given Linear Temporal Logic
 (LTL) property. LCRL automatically shapes a synchronous reward function on-the-fly. This enables any
 off-the-shelf RL algorithm to synthesise policies that yield traces which probabilistically satisfy the LTL property. LCRL produces policies that are certified to satisfy the given LTL property with maximum probability.
@@ -41,53 +41,53 @@ pip3 install git+https://github.com/grockious/lcrl.git
 #### Training an RL agent under an LTL property
 A sample training command is:
 ```
-python3 train.py --env 'SlipperyGrid' --layout 'layout_1' --property 'g1-then-g2' 
+python3 train.py --env 'SlipperyGrid' --layout 'layout_1' --property 'g1-then-g2'
 ```
 where option `--env` specifies an environment object from the subdirectory
 ```
-./lcrl/environments
+./environments
 ```
 The option `--layout` determines atomic proposition mapping within the environment
-(the environments in `./lcrl/environments` provide one or more layouts), 
-and the option `--property` specifies the LTL property. 
+(the environments in `./environments` provide one or more layouts),
+and the option `--property` specifies the LTL property.
 
 Use the `-h` option for help and to get a list of the available parameters.
 #### Applying LCRL to a black-box MDP and custom LTL property
 #### - MDP:
 LCRL can be connected to a black-box MDP object that is fully unknown to
 the tool. This includes the size of the state space as LCRL automatically keeps track of visited states. For examples of MDP classes
-please refer to `./lcrl/environments`. The MDP object, call it `MDP`, should at 
+please refer to `./environments`. The MDP object, call it `MDP`, should at
 least have the following methods:
 ```
 MDP.reset()
-``` 
+```
 to reset the MDP state,
 ```
 MDP.step(action)
-``` 
+```
 to change the state of the MDP upon executing `action`,
 ```
 MDP.state_label(state)
-``` 
+```
 to output the label of `state`.
 
 #### - LTL:
-The LTL property has to be converted to an LDBA, which is a finite-state machine. 
+The LTL property has to be converted to an LDBA, which is a finite-state machine.
 An excellent tool for this is OWL, which you can [try online](https://owl.model.in.tum.de/try/).
-The synthesised LDBA can be used as an object of the class `./lcrl/automata/ldba.py`.  
+The synthesised LDBA can be used as an object of the class `./automata/ldba.py`.  
 
 The constructed LDBA, call it `LDBA`, is expected to offer the following methods:
 ```
 LDBA.reset()
-``` 
+```
 to reset the automaton state and its accepting frontier function,
 ```
 LDBA.step(label)
-``` 
+```
 to change the state of the automaton upon reading `label`,
 ```
 LDBA.accepting_frontier_function(state)
-``` 
+```
 to update the accepting frontier set.
 
 ## Reference

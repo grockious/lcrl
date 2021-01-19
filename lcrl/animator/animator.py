@@ -8,7 +8,7 @@ import imageio
 from lcrl.environments.slippery_grid import SlipperyGrid
 
 
-def animate(mdp, executed_policy, dir_to_save):
+def animate(mdp, executed_policy, dir_to_save, labels_value):
     if isinstance(mdp, SlipperyGrid):
         cmap = colors.ListedColormap(['red', 'black', 'blue', 'cyan', 'yellow'])
         bounds = [-2.9, -1.9, -0.9, 0.1, 1.1, 2.1]
@@ -20,11 +20,11 @@ def animate(mdp, executed_policy, dir_to_save):
         print('Creating a gif for the trained policy:')
         for i in tqdm.tqdm(range(len(executed_policy))):
             if i == 0:
-                plt.imshow(mdp.labels, interpolation='nearest', cmap=cmap, norm=norm)
+                plt.imshow(labels_value, interpolation='nearest', cmap=cmap, norm=norm)
                 path_x, path_y = np.array(executed_policy[0]).T
                 plt.scatter(path_y, path_x, c='red', edgecolors='darkred')
             else:
-                plt.imshow(mdp.labels, interpolation='nearest', cmap=cmap, norm=norm)
+                plt.imshow(labels_value, interpolation='nearest', cmap=cmap, norm=norm)
                 path_x, path_y = np.array(executed_policy[0:i]).T
                 plt.scatter(path_y, path_x, c='lime', edgecolors='teal')
                 path_x, path_y = np.array(executed_policy[i]).T
