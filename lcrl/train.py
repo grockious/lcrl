@@ -79,17 +79,18 @@ def train(
             if learning_task.epsilon_transitions_exists and \
                     maxQ_action_index > len(learning_task.MDP.action_space) - 1:
                 epsilon_transition_taken = True
+            else:
+                epsilon_transition_taken = False
             if epsilon_transition_taken:
                 next_MDP_state = learning_task.MDP.current_state
                 next_automaton_state = learning_task.LDBA.step(maxQ_action)
             else:
                 next_MDP_state = learning_task.MDP.step(maxQ_action)
+                next_automaton_state = learning_task.LDBA.step(learning_task.MDP.state_label(next_MDP_state))
             test_path.append(next_MDP_state)
-            next_automaton_state = learning_task.LDBA.step(learning_task.MDP.state_label(next_MDP_state))
-            learning_task.LDBA.accepting_frontier_function(next_automaton_state)
-            next_state = next_MDP_state + [next_automaton_state]
-            current_state = next_state
-        cmap = colors.ListedColormap(['red', 'black', 'blue', 'cyan', 'yellow'])
+            if not epsilon_transition_taken:
+                learning_task.LDBA.accepting_frontier_function(next_automaton_state)
+        cmap = colors.ListedColormap(['red', 'grey', 'blue', 'cyan', 'yellow'])
         bounds = [-2.9, -1.9, -0.9, 0.1, 1.1, 2.1]
         norm = colors.BoundaryNorm(bounds, cmap.N)
         labels_dic = {

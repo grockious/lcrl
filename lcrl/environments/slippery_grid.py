@@ -82,6 +82,10 @@ class SlipperyGrid:
         if -1 in next_state:
             next_state[next_state.index(-1)] = 0
 
+        # check for obstacles
+        if 'obstacle' in self.state_label(next_state):
+            next_state = self.current_state
+
         # update current state
         self.current_state = next_state
         return next_state
