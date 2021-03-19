@@ -8,7 +8,7 @@ setuptools.setup(
     version='0.0.4',
     author="Hosein Hasanbeig",
     author_email="hosein.hasanbeig@cs.ox.ac.uk",
-    keywords='rk, logic, environment, agent',
+    keywords='rl, logic, environment, agent',
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://github.com/grockious/lcrl',
