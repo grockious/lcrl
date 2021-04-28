@@ -1,0 +1,2 @@
+include src/environments/layouts/*.png
+include assets/*.png

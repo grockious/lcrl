@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="200" src="https://i.imgur.com/6Rf2GcE.png">
+    <img width="250" src="assets/lcrl.png">
 </p>
 <!--- https://i.imgur.com/6Rf2GcE.png --->
 
@@ -21,16 +21,16 @@ off-the-shelf RL algorithm to synthesise policies that yield traces which probab
 * Hasanbeig, M. , Abate, A. and Kroening, D., "Logically-Constrained Reinforcement Learning", CoRR abs/1801.08099, 2018. [[PDF]](https://arxiv.org/pdf/1801.08099.pdf)
 
 ## Installation
-To get the latest version of LCRL, you can clone this repository and install the dependencies:
+You can install LCRL using 
+```
+pip3 install lcrl
+```
+
+Alternatively, you can clone this repository and install the dependencies:
 ```
 git clone https://github.com/grockious/lcrl.git
 cd lcrl
 pip3 install .
-```
-
-Alternatively, you can directly use
-```
-pip3 install lcrl
 ```
 or
 ```
@@ -39,24 +39,49 @@ pip3 install git+https://github.com/grockious/lcrl.git
 
 ## Usage
 #### Training an RL agent under an LTL property
-A sample training command is:
-```
-python3 train.py --env 'SlipperyGrid' --layout 'layout_1' --property 'g1-then-g2'
-```
-where option `--env` specifies an environment object from the subdirectory
-```
-./environments
-```
-The option `--layout` determines atomic proposition mapping within the environment
-(the environments in `./environments` provide one or more layouts),
-and the option `--property` specifies the LTL property.
+Sample training commands can be found under the `./scripts` directory. LCRL consists of three main classes `MDP`, `LDBA` and the `LCRL` core trainer. Inside LCRL the `MDP` state and the `LDBA` state are synchronised, resulting in an on-the-fly product MDP structure.
 
-Use the `-h` option for help and to get a list of the available parameters.
+&nbsp;
+<p align="center">
+    <img width="650" src="assets/lcrl_overview.png">
+</p>
+<!--- https://i.imgur.com/uH481P0.png --->
+&nbsp;
+
+On the product MDP, LCRL automatically shapes a reward function based on the `LDBA` object. An optimal stationary Markov policy synthesised by LCRL on the product
+MDP is guaranteed to induce a finite-memory policy on the original MDP that maximises the probability of satisfying the given LTL property. 
+
+The package includes a number of pre-built `MDP` and `LDBA` class objects. For examples of `MDP` and `LDBA` classes
+please refer to `./environments` and `./automata` respectively. For instance, to train an agent for `minecraft-t1` run:
+
+```
+python3
+```
+```python
+>>> # import LCRL code trainer module
+>>> from lcrl.train import train
+>>> # import the pre-built LDBA for minecraft-t1
+>>> from lcrl.automata.minecraft_1 import minecraft_1
+>>> # import the pre-built MDP for minecraft-t1
+>>> from lcrl.environments.minecraft import minecraft
+>>> 
+>>> LDBA = minecraft_1
+>>> MDP = minecraft
+>>> 
+>>> # train the agent
+>>> task = train(MDP, LDBA,
+                     algorithm='ql',
+                     episode_num=500,
+                     iteration_num_max=4000,
+                     discount_factor=0.95,
+                     learning_rate=0.9
+                     )
+```
+
 #### Applying LCRL to a black-box MDP and custom LTL property
 #### - MDP:
 LCRL can be connected to a black-box MDP object that is fully unknown to
-the tool. This includes the size of the state space as LCRL automatically keeps track of visited states. For examples of MDP classes
-please refer to `./environments`. The MDP object, call it `MDP`, should at
+the tool. This includes the size of the state space as LCRL automatically keeps track of visited states. The MDP object, call it `MDP`, should at
 least have the following methods:
 ```
 MDP.reset()
@@ -88,7 +113,7 @@ to change the state of the automaton upon reading `label`,
 ```
 LDBA.accepting_frontier_function(state)
 ```
-to update the accepting frontier set.
+to update the accepting frontier set. This method is already included in the class `./automata/ldba.py`, thus for a custom `LDBA` object you need to only instance this class and specify the `reset()` and `step(label)` methods.  
 
 ## Reference
 Please use this bibtex entry if you want to cite this repository in your publication:
