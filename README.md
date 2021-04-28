@@ -53,18 +53,18 @@ On the product MDP, LCRL automatically shapes a reward function based on the `LD
 MDP is guaranteed to induce a finite-memory policy on the original MDP that maximises the probability of satisfying the given LTL property. 
 
 The package includes a number of pre-built `MDP` and `LDBA` class objects. For examples of `MDP` and `LDBA` classes
-please refer to `./environments` and `./automata` respectively. For instance, to train an agent for `minecraft-t1` run:
+please refer to `./src/environments` and `./src/automata` respectively. For instance, to train an agent for `minecraft-t1` run:
 
 ```
 python3
 ```
 ```python
 >>> # import LCRL code trainer module
->>> from lcrl.train import train
+>>> from src.train import train
 >>> # import the pre-built LDBA for minecraft-t1
->>> from lcrl.automata.minecraft_1 import minecraft_1
+>>> from src.automata.minecraft_1 import minecraft_1
 >>> # import the pre-built MDP for minecraft-t1
->>> from lcrl.environments.minecraft import minecraft
+>>> from src.environments.minecraft import minecraft
 >>> 
 >>> LDBA = minecraft_1
 >>> MDP = minecraft
@@ -79,7 +79,7 @@ python3
                      )
 ```
 
-#### Applying LCRL to a black-box MDP and custom LTL property
+## Applying LCRL to a black-box MDP and custom LTL property
 #### - MDP:
 LCRL can be connected to a black-box MDP object that is fully unknown to
 the tool. This includes the size of the state space as LCRL automatically keeps track of visited states. The MDP object, call it `MDP`, should at
@@ -100,7 +100,7 @@ to output the label of `state`.
 #### - LTL:
 The LTL property has to be converted to an LDBA, which is a finite-state machine.
 An excellent tool for this is OWL, which you can [try online](https://owl.model.in.tum.de/try/).
-The synthesised LDBA can be used as an object of the class `./automata/ldba.py`.  
+The synthesised LDBA can be used as an object of the class `./src/automata/ldba.py`.  
 
 The constructed LDBA, call it `LDBA`, is expected to offer the following methods:
 ```
@@ -114,7 +114,7 @@ to change the state of the automaton upon reading `label`,
 ```
 LDBA.accepting_frontier_function(state)
 ```
-to update the accepting frontier set. This method is already included in the class `./automata/ldba.py`, thus for a custom `LDBA` object you need to only instance this class and specify the `reset()` and `step(label)` methods.  
+to update the accepting frontier set. This method is already included in the class `./src/automata/ldba.py`, thus for a custom `LDBA` object you need to only instance this class and specify the `reset()` and `step(label)` methods.  
 
 ## Reference
 Please use this bibtex entry if you want to cite this repository in your publication:
