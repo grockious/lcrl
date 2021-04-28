@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='lcrl',
-    version='0.0.4',
+    version='0.0.5',
     author="Hosein Hasanbeig",
     author_email="hosein.hasanbeig@cs.ox.ac.uk",
     keywords='rl, logic, environment, agent',
@@ -20,12 +20,13 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     install_requires=[
         'numpy',
         'matplotlib',
         'dill>=0.3.2',
         'imageio',
-        'tqdm'
+        'tqdm',
+        'tensorflow>=2'
     ]
 )
