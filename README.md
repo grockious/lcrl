@@ -39,6 +39,7 @@ pip3 install git+https://github.com/grockious/lcrl.git
 
 ## Usage
 #### Training an RL agent under an LTL property
+
 Sample training commands can be found under the `./scripts` directory. LCRL consists of three main classes `MDP`, `LDBA` and the `LCRL` core trainer. Inside LCRL the `MDP` state and the `LDBA` state are synchronised, resulting in an on-the-fly product MDP structure.
 
 &nbsp;
