@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="250" src="assets/lcrl.png">
+    <img width="250" src="https://raw.githubusercontent.com/grockious/lcrl/master/assets/lcrl.png">
 </p>
 <!--- https://i.imgur.com/6Rf2GcE.png --->
 
