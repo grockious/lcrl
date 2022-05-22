@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='lcrl',
-    version='0.0.6',
+    version='0.0.7',
     author="Hosein Hasanbeig",
     author_email="hosein.hasanbeig@icloud.com",
     keywords='rl, logic, environment, agent',
