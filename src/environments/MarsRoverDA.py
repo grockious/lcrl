@@ -53,7 +53,7 @@ class MarsRover:
     def step(self, action):
         # agent movement dynamics:
         # # stochasticity
-        traversed_distance = 2
+        traversed_distance = 10*random.random()
         noise = np.array([random.uniform(-0.1, 0.5), random.uniform(-0.1, 0.5)])
         if action == 'right':
             next_state = self.current_state + [0, traversed_distance] + noise

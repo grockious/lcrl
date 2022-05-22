@@ -16,7 +16,7 @@ class LCRL:
         (3) a "state_label(state)" function that maps states to labels
         (4) current state of the MDP is "current_state"
         (5) action space is "action_space" and all actions are enabled in each state
-    LDBA : an object of ./src/automata/ldba.py
+    LDBA : an object of ./src/automata/LDBA.py
         a limit-deterministic Büchi automaton
     discount_factor: float
         discount factor (default 0.9)
@@ -31,8 +31,13 @@ class LCRL:
         employs Episodic Q-learning to synthesise an optimal policy over the product MDP
     train_nfq(number_of_episodes, iteration_threshold, nfq_replay_buffer_size, num_of_hidden_neurons)
         employs Episodic Neural Fitted Q-Iteration to synthesise an optimal policy over the product MDP
+    train_ddpg(number_of_episodes, iteration_threshold, ddpg_replay_buffer_size, num_of_hidden_neurons)
+        employs Episodic Deep Deterministic Policy Gradient to synthesise an optimal policy over the product MDP
     reward(automaton_state)
         shapes the reward function according to the automaton accepting frontier set
+        for more details refer to the tool paper
+    action_space_augmentation()
+        augments the action space whenever an epsilon transition is expected
         for more details refer to the tool paper
     """
 
@@ -45,10 +50,10 @@ class LCRL:
             epsilon=0.15
     ):
         if MDP is None:
-            raise Exception("LCRL expects MDP as an input")
+            raise Exception("LCRL expects an MDP object as input")
         self.MDP = MDP
         if LDBA is None:
-            raise Exception("LCRL expects LDBA as an input")
+            raise Exception("LCRL expects an LDBA object as input")
         self.LDBA = LDBA
         self.epsilon_transitions_exists = True if LDBA.epsilon_transitions.__len__() > 0 else False
         self.gamma = discount_factor
@@ -64,6 +69,7 @@ class LCRL:
         self.Q_initial_value = 0
         self.early_interruption = 0
         self.q_at_initial_state = []
+        self.successes_in_test = 0
         # ##### testing area ##### #
         self.test = False
         # ######################## #
@@ -78,7 +84,7 @@ class LCRL:
         self.Q_initial_value = Q_initial_value
 
         if self.LDBA.accepting_sets is None:
-            raise Exception('LDBA object is not defined properly. Please specify the "accepting_set". ')
+            raise Exception('LDBA object is not defined properly. Please specify the "accepting_set".')
 
         # product MDP: synchronise the MDP state with the automaton state
         current_state = self.MDP.current_state + [self.LDBA.automaton_state]
@@ -225,10 +231,11 @@ class LCRL:
             self, number_of_episodes,
             iteration_threshold,
             nfq_replay_buffer_size,
-            num_of_hidden_neurons=128
+            num_of_hidden_neurons=256
     ):
         import tensorflow as tf
         from tensorflow import keras
+        tf.get_logger().setLevel('ERROR')
         self.MDP.reset()
         self.LDBA.reset()
 
@@ -248,8 +255,7 @@ class LCRL:
         # initiate an NFQ module
         model_0 = keras.Sequential([
             keras.layers.Dense(num_of_hidden_neurons, input_dim=nfq_input_dim, activation=tf.nn.relu),
-            keras.layers.Dense(num_of_hidden_neurons, activation=tf.nn.relu),
-            keras.layers.Dense(1, activation='sigmoid')])
+            keras.layers.Dense(1, activation=tf.nn.leaky_relu)])
         model_0.compile(loss='mean_squared_error',
                         metrics=['mean_squared_error'],
                         optimizer='Adam')
@@ -264,7 +270,9 @@ class LCRL:
             # exploration loop
             episode = 0
             print("sampling...")
+            rewarding_paths = []
             while episode < number_of_episodes:
+                episode_path = []
                 episode += 1
                 self.MDP.reset()
                 self.LDBA.reset()
@@ -326,15 +334,16 @@ class LCRL:
                     # update the accepting frontier set
                     if not epsilon_transition_taken:
                         reward_flag = self.LDBA.accepting_frontier_function(next_automaton_state)
-                        reward_flag = reward_flag + (reward_flag / 10) * random.random()  # to break symmetry
+                        reward_flag = reward_flag + (np.cos(np.pi*reward_flag)) * 0.1 * random.random()  # to break symmetry
                     else:
                         reward_flag = 0 + 0.1 * random.random()  # to break symmetry
                         epsilon_transition_taken = 0
 
                     if reward_flag > 0.5:
                         state_dep_gamma = self.gamma
+                        # print('reward reached!')
                     else:
-                        state_dep_gamma = 1
+                        state_dep_gamma = self.gamma
 
                     # create an NFQ module if needed
                     if next_automaton_state not in self.Q.keys() and self.LDBA.accepting_frontier_set:
@@ -343,8 +352,7 @@ class LCRL:
                             keras.Sequential([
                                 keras.layers.Dense(num_of_hidden_neurons, input_dim=nfq_input_dim,
                                                    activation=tf.nn.relu),
-                                keras.layers.Dense(num_of_hidden_neurons, activation=tf.nn.relu),
-                                keras.layers.Dense(1, activation='sigmoid')])
+                                keras.layers.Dense(1, activation=tf.nn.leaky_relu)])
                         self.Q[next_automaton_state].compile(loss='mean_squared_error',
                                                              metrics=['mean_squared_error'],
                                                              optimizer='Adam')
@@ -359,47 +367,38 @@ class LCRL:
                         next_state[0: -1] +
                         [reward_flag] +
                         [state_dep_gamma] +
-                        [epsilon_transition_taken]
+                        [epsilon_transition_taken] +
+                        [current_state[-1]]
                     )
+                    episode_path.append(self.replay_buffers[active_model][-1])
+                    if reward_flag > 0.5:
+                        rewarding_paths.extend(episode_path)
 
                     # update the state
                     current_state = next_state
 
             # exploitation loop
-            sars = []  # sar := state - action - reward
-            models = []
-            normal_refinary = []
-            rew = None
-
-            for i in range(len(list(self.replay_buffers.keys()))):
-                sars.append(np.unique(np.array(self.replay_buffers[list(self.replay_buffers.keys())[i]]), axis=0))
-                if sum(sars[i][:, 5] > 0.5) == 0:
-                    normal_refinary.append(i)
-                else:
-                    rew = i
-                models.append(self.Q[list(self.replay_buffers.keys())[i]])
-            if rew is None:
-                print('\n please consider tuning exploration parameters, e.g. increasing episode_num, '
-                      'iteration_num_max, and nfq_replay_buffer_size \n')
-
-            # refine sars
             exp_size = nfq_replay_buffer_size
-            for i in normal_refinary:
-                if len(sars[i]) > exp_size and normal_refinary:
-                    sars[i] = np.delete(sars[i], random.sample(range(0, len(sars[i])), len(sars[i]) - exp_size), axis=0)
-            reward_column = sars[rew][:, 5]
-            indx_rew = np.where([reward_column > 0.5])
-            high_reward_sar_rew = sars[rew][indx_rew[1]]
-            while len(sars[rew]) - (exp_size + len(indx_rew[1])) < 0:
-                exp_size -= 1
-            sars[rew] = np.delete(sars[rew], random.sample(range(0, len(sars[rew])),
-                                                           len(sars[rew]) - (exp_size + len(indx_rew[1]))),
-                                  axis=0)
-            sars[rew] = np.vstack((sars[rew], high_reward_sar_rew))
+            high_reward_total = np.array(rewarding_paths)
+            sars = {}
+            high_reward_sars = {}
+            for model_key in self.Q.keys():
+                high_reward_sars[model_key] = high_reward_total[high_reward_total[:, -1] == model_key]
+                if len(high_reward_sars[model_key]) < exp_size:
+                    sars[model_key] = np.array(self.replay_buffers[model_key])
+                    uniform_sampled_sars = sars[model_key][
+                        np.random.choice(sars[model_key].shape[0], exp_size - len(high_reward_sars[model_key]),
+                                         replace=False)]
+                    sars[model_key] = np.vstack((high_reward_sars[model_key], uniform_sampled_sars))
+                    np.random.shuffle(sars[model_key])
+                else:
+                    sars[model_key] = high_reward_sars[model_key]
 
-            # initialization
-            for i in range(len(models)):
-                models[i].fit(np.hstack((sars[i][:, 0:2], sars[i][:, 3:4])), sars[i][:, 5:6], epochs=3, verbose=0)
+            for model_key in self.Q.keys():
+                self.Q[model_key].fit(
+                    sars[model_key][:, 0:state_dimension + 1],  # stat - action
+                    sars[model_key][:, nfq_input_dim + state_dimension],  # reward
+                    epochs=3, verbose=0)
 
             episode = 0
             self.MDP.reset()
@@ -410,7 +409,7 @@ class LCRL:
                 Q_at_initial_state = []
                 for action_index in range(len(product_MDP_action_space)):
                     Q_at_initial_state.append(
-                        list(models[0].predict(np.array(init_state + [action_index]).reshape(1, nfq_input_dim))[0])[0]
+                        list(self.Q[0].predict(np.array(init_state + [action_index]).reshape(1, nfq_input_dim))[0])[0]
                     )
 
                 self.q_at_initial_state.append(max(Q_at_initial_state))
@@ -421,29 +420,29 @@ class LCRL:
                       # + ', current state=' + str(self.MDP.current_state)
                       )
 
-                for j in range(len(models) - 1, -1, -1):
-                    target = np.zeros(len(sars[j]))
-                    for k in range(len(sars[j])):
+                for model_key in self.Q.keys():
+                    target = np.zeros(len(sars[model_key]))
+                    for k in range(len(sars[model_key])):
                         neigh = []
-                        if sars[j][k, -1] == 1:  # meaning that an epsilon transition was active
+                        if sars[model_key][k, -1] == 1:  # meaning that an epsilon transition was active
                             action_space = list(range(len(self.MDP.action_space)))
                             action_space = action_space + [action_space[-1] + 1]  # for the epsilon transition
                         else:
                             action_space = self.MDP.action_space
                         neigh_input = []
                         for a in range(len(action_space)):
-                            neigh_input = np.append(sars[j][k, nfq_input_dim:nfq_input_dim + state_dimension],
+                            neigh_input = np.append(sars[model_key][k, nfq_input_dim:nfq_input_dim + state_dimension],
                                                     a).reshape(1, nfq_input_dim)
-                            neigh.append(models[j].predict(neigh_input))
-                        # target = reward + gamma * max Q(s,a)
-                        target[k] = sars[j][k, nfq_input_dim + state_dimension] + \
-                                    sars[j][k, nfq_input_dim + state_dimension + 1] * max(neigh)
-                    models[j].fit(
-                        np.hstack((sars[j][:, 0:state_dimension], sars[j][:, state_dimension + 1:state_dimension + 2])),
-                        target.reshape(len(
-                            np.hstack(
-                                (sars[j][:, 0:state_dimension], sars[j][:, state_dimension + 1:state_dimension + 2]))),
-                            1),
+                            neigh.append(self.Q[model_key].predict(neigh_input))
+                        # target = reward + gamma * max Q(s',a')
+                        target[k] = sars[model_key][k, nfq_input_dim + state_dimension] + \
+                                    sars[model_key][k, nfq_input_dim + state_dimension + 1] * max(neigh)
+                        # terminal state check
+                        if sars[model_key][k, nfq_input_dim + state_dimension] > 0.5:
+                            target[k] = sars[model_key][k, nfq_input_dim + state_dimension]
+                    self.Q[model_key].fit(
+                        sars[model_key][:, 0:state_dimension + 1],
+                        target.reshape(len(sars[model_key]), 1),
                         epochs=3,
                         verbose=0)
 
@@ -466,14 +465,15 @@ class LCRL:
             self, number_of_episodes,
             iteration_threshold,
             ddpg_replay_buffer_size,
-            num_of_hidden_neurons=128
+            num_of_hidden_neurons=32
     ):
         import tensorflow as tf
-        from tensorflow import keras
+        tf.get_logger().setLevel('ERROR')
+        from keras import layers
         state_dimension = len(self.MDP.current_state)
         action_dimension = 1
-        lower_bound = -1
-        upper_bound = 1
+        lower_bound = -1.0
+        upper_bound = 1.0
 
         if self.LDBA.accepting_sets is None:
             raise Exception('LDBA object is not defined properly. Please specify the "accepting_set". ')
@@ -489,9 +489,9 @@ class LCRL:
 
             def __call__(self):
                 x = (
-                        self.x_prev
-                        + self.theta * (self.mean - self.x_prev) * self.dt
-                        + self.std_dev * np.sqrt(self.dt) * np.random.normal(size=self.mean.shape)
+                    self.x_prev
+                    + self.theta * (self.mean - self.x_prev) * self.dt
+                    + self.std_dev * np.sqrt(self.dt) * np.random.normal(size=self.mean.shape)
                 )
                 self.x_prev = x
                 return x
@@ -580,52 +580,48 @@ class LCRL:
         def get_actor():
             last_init = tf.random_uniform_initializer(minval=-0.003, maxval=0.003)
 
-            inputs = keras.layers.Input(shape=(state_dimension,))
-            out = keras.layers.Dense(num_of_hidden_neurons*2, activation="relu")(inputs)
-            out = keras.layers.Dense(num_of_hidden_neurons*2, activation="relu")(out)
-            outputs = keras.layers.Dense(1, activation="tanh", kernel_initializer=last_init)(out)
+            inputs = layers.Input(shape=(state_dimension,))
+            out = layers.Dense(num_of_hidden_neurons*8, activation="relu")(inputs)
+            out = layers.Dense(num_of_hidden_neurons*8, activation="relu")(out)
+            outputs = layers.Dense(1, activation="tanh", kernel_initializer=last_init)(out)
 
             model = tf.keras.Model(inputs, outputs)
             return model
 
         def get_critic():
             # state as input
-            state_input = keras.layers.Input(shape=(state_dimension))
-            state_out = keras.layers.Dense(num_of_hidden_neurons/4, activation="relu")(state_input)
-            state_out = keras.layers.Dense(num_of_hidden_neurons/2, activation="relu")(state_out)
+            state_input = layers.Input(shape=(state_dimension))
+            state_out = layers.Dense(int(num_of_hidden_neurons/2), activation="relu")(state_input)
+            state_out = layers.Dense(num_of_hidden_neurons, activation="relu")(state_out)
 
             # action as input
-            action_input = keras.layers.Input(shape=(action_dimension))
-            action_out = keras.layers.Dense(num_of_hidden_neurons/2, activation="relu")(action_input)
+            action_input = layers.Input(shape=(action_dimension))
+            action_out = layers.Dense(num_of_hidden_neurons, activation="relu")(action_input)
 
             # concatenating
-            concat = keras.layers.Concatenate()([state_out, action_out])
+            concat = layers.Concatenate()([state_out, action_out])
 
-            out = keras.layers.Dense(num_of_hidden_neurons*2, activation="relu")(concat)
-            out = keras.layers.Dense(num_of_hidden_neurons*2, activation="relu")(out)
-            outputs = keras.layers.Dense(1)(out)
+            out = layers.Dense(num_of_hidden_neurons*8, activation="relu")(concat)
+            out = layers.Dense(num_of_hidden_neurons*8, activation="relu")(out)
+            outputs = layers.Dense(1)(out)
 
             # output
             model = tf.keras.Model([state_input, action_input], outputs)
 
             return model
 
-
-        def policy(state, noise_object, training=True):
+        def policy(state, noise_object):
             sampled_actions = tf.squeeze(actor_dict[active_model](state))
-            if training:
-                noise = noise_object()
-            else:
-                noise = 0
-            # add noise to action if "training=True"
+            noise = noise_object()
+            # Adding noise to action
             sampled_actions = sampled_actions.numpy() + noise
 
-            # squash the action between the lower_bound and upper_bound
+            # We make sure action is within bounds
             legal_action = np.clip(sampled_actions, lower_bound, upper_bound)
 
             return [np.squeeze(legal_action)]
 
-        exploration_parameter = self.epsilon
+        exploration_parameter = self.epsilon*3
         ou_noise = OUActionNoise(mean=np.zeros(1), std_deviation=float(exploration_parameter) * np.ones(1))
 
         # initiate a DDPG module
@@ -643,8 +639,8 @@ class LCRL:
         target_critic_dict[0].set_weights(critic_dict[0].get_weights())
 
         # learning rates
-        critic_lr = self.alpha*2  # 0.002
-        actor_lr = self.alpha  # 0.001
+        critic_lr = self.alpha*0.04
+        actor_lr = self.alpha*0.02
 
         critic_optimizer = tf.keras.optimizers.Adam(critic_lr)
         actor_optimizer = tf.keras.optimizers.Adam(actor_lr)
@@ -652,10 +648,11 @@ class LCRL:
         # soft update parameter
         tau = 0.005
 
-        buffer_0 = Buffer(ddpg_replay_buffer_size, 64)
+        buffer_0 = Buffer(ddpg_replay_buffer_size, 128)
         buffer_dict = {0: buffer_0}
 
         epsilon_transition_taken = 0
+        ep_reward_list = []
 
         # training loop
         try:
@@ -663,15 +660,12 @@ class LCRL:
 
                 self.MDP.reset()
                 self.LDBA.reset()
+                prev_state = self.MDP.current_state
                 episodic_reward = 0
-                current_state = self.MDP.current_state.tolist() + [self.LDBA.automaton_state]
-                prev_state = np.array(current_state[0:2].copy())
 
                 # check for epsilon-transitions at the current automaton state
                 if self.epsilon_transitions_exists:
                     product_MDP_action_space = self.action_space_augmentation()
-
-                iteration = 0
 
                 if self.decay_lr:
                     try:
@@ -683,10 +677,7 @@ class LCRL:
                         print('\nExiting...')
 
                 # each episode loop
-                while self.LDBA.accepting_frontier_set and \
-                        iteration < iteration_threshold and \
-                        self.LDBA.automaton_state != -1:
-                    iteration += 1
+                while True:
 
                     # get an action from the actor
                     active_model = self.LDBA.automaton_state
@@ -706,19 +697,15 @@ class LCRL:
 
                     # product MDP modification (for more details refer to the tool paper)
                     if epsilon_transition_taken:
-                        next_MDP_state = self.MDP.current_state.tolist()
                         next_automaton_state = self.LDBA.step(epsilon_action)
+                        state = prev_state
                     else:
-                        next_MDP_state = self.MDP.step(action).tolist()
-                        next_automaton_state = self.LDBA.step(self.MDP.state_label(next_MDP_state))
-
-                    state = np.array(next_MDP_state.copy())
+                        state = self.MDP.step(action)
+                        next_automaton_state = self.LDBA.step(self.MDP.state_label(state))
 
                     # product MDP: synchronise the automaton with MDP
+                    next_MDP_state = self.MDP.current_state.tolist()
                     next_state = next_MDP_state + [next_automaton_state]
-
-                    if next_automaton_state == -1:
-                        break
 
                     if self.test:
                         print(str(action) + ' | ' + str(next_state) + ' | ' + self.MDP.state_label(next_MDP_state))
@@ -730,9 +717,8 @@ class LCRL:
                     # update the accepting frontier set
                     if not epsilon_transition_taken:
                         reward_flag = self.LDBA.accepting_frontier_function(next_automaton_state)
-                        reward_flag = reward_flag + (reward_flag / 10) * random.random()  # to break symmetry
                     else:
-                        reward_flag = 0 + 0.1 * random.random()  # to break symmetry
+                        reward_flag = 0
                         epsilon_transition_taken = 0
 
                     if reward_flag > 0.5:
@@ -748,7 +734,7 @@ class LCRL:
                         target_actor_dict[next_automaton_state] = get_actor()
                         target_critic_dict[next_automaton_state] = get_critic()
 
-                        buffer_dict[next_automaton_state] = Buffer(ddpg_replay_buffer_size, 64)
+                        buffer_dict[next_automaton_state] = Buffer(ddpg_replay_buffer_size, 128)
 
                         # Making the weights equal initially
                         target_actor_dict[next_automaton_state].set_weights(
@@ -756,20 +742,28 @@ class LCRL:
                         target_critic_dict[next_automaton_state].set_weights(
                             critic_dict[next_automaton_state].get_weights())
 
-                    buffer_dict[active_model].record((prev_state, action, reward_flag, state))
-                    episodic_reward += reward_flag
+                    reward = reward_flag - (np.cos(
+                        (np.pi / 2) * reward_flag) * 0.3 + 0.02 * random.random())  # to break symmetry
+                    buffer_dict[active_model].record((prev_state, action, reward, state))
+                    episodic_reward += reward
 
                     buffer_dict[active_model].learn()
                     update_target(target_actor_dict[active_model].variables, actor_dict[active_model].variables, tau)
                     update_target(target_critic_dict[active_model].variables, critic_dict[active_model].variables, tau)
 
+                    if next_automaton_state == -1:
+                        break
+                    if reward_flag > 0.5:
+                        # print('reward reached!')
+                        self.LDBA.reset()
+
                     prev_state = state
 
-                self.q_at_initial_state.append(episodic_reward)
+                ep_reward_list.append(episodic_reward)
 
-                # average reward of last 40 episodes
-                avg_reward = np.mean(self.q_at_initial_state[-40:])
-                print("episode: {}, avg reward={}".format(episode, avg_reward))
+                avg_reward = np.mean(ep_reward_list[-40:])
+                print("episode: {}, average episode reward={}".format(episode, avg_reward))
+                self.q_at_initial_state.append(avg_reward)
 
             self.Q = actor_dict
 

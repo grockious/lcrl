@@ -36,7 +36,7 @@ class MarsRover:
         self.labels = self.background.__array__()
         self.initial_state = initial_state
         if self.initial_state is None:
-            self.initial_state = np.array([35, 25], dtype=np.float32)
+            self.initial_state = np.array([60, 100], dtype=np.float32)
         self.current_state = self.initial_state
         # range for the sine of action angle direction
         self.action_space = [1, -1]
@@ -47,11 +47,11 @@ class MarsRover:
     def step(self, action):
         # agent movement dynamics:
         # # stochasticity
-        traversed_distance = 2
+        traversed_distance = 4 + random.random()
         noise = np.array([random.uniform(-0.1, 0.5), random.uniform(-0.1, 0.5)])
         next_state = self.current_state + noise + \
-                     np.append(traversed_distance * np.arcsin(action) / (np.pi / 2),
-                               traversed_distance * np.arccos(action) / (np.pi / 2))
+                     np.append(traversed_distance * np.sin(action[0] * np.pi),
+                               traversed_distance * np.cos(action[0] * np.pi))
 
         # check for boundary violations
         if next_state[0] > self.width - 1:

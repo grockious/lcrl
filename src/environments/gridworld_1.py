@@ -1,4 +1,4 @@
-from src.environments.slippery_grid import SlipperyGrid
+from src.environments.SlipperyGrid import SlipperyGrid
 import numpy as np
 
 # an example slippery grid "assets/layout1.png" or "https://i.imgur.com/CzSbaYi.png"

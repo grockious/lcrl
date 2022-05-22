@@ -5,9 +5,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='lcrl',
-    version='0.0.5',
+    version='0.0.6',
     author="Hosein Hasanbeig",
-    author_email="hosein.hasanbeig@cs.ox.ac.uk",
+    author_email="hosein.hasanbeig@icloud.com",
     keywords='rl, logic, environment, agent',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -20,7 +20,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.8',
     install_requires=[
         'numpy',
         'matplotlib',

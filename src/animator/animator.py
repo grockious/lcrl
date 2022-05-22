@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tqdm
 import imageio
-from src.environments.slippery_grid import SlipperyGrid
+from src.environments.SlipperyGrid import SlipperyGrid
 
 
 def animate(mdp, executed_policy, dir_to_save, labels_value, cmap, norm, patches):
@@ -44,4 +44,4 @@ def animate(mdp, executed_policy, dir_to_save, labels_value, cmap, norm, patches
                 images.append(imageio.imread(file_path))
         imageio.mimsave(os.path.join(animation_dir, 'executed_policy.gif'), images, fps=55)
     else:
-        raise NotImplementedError
+        raise NotImplementedError('The animator does not support this environment yet.')

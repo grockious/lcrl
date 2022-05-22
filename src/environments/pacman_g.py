@@ -1,4 +1,4 @@
 from src.environments.PacMan import PacMan
 
-pacman = PacMan(layout='small')
+pacman = PacMan(layout='large')
 

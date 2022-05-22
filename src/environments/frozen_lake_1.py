@@ -1,4 +1,4 @@
-from src.environments.slippery_grid import SlipperyGrid
+from src.environments.SlipperyGrid import SlipperyGrid
 import numpy as np
 
 # A modified version of OpenAI Gym FrozenLake
@@ -8,7 +8,7 @@ import numpy as np
 FrozenLake = SlipperyGrid(shape=[12, 10],
                           initial_state=[0, 5],
                           slip_probability=0.1,
-                          sink_states=[[7, 8], [0, 1]]
+                          sink_states=[[4, 7], [5, 8]]
                           )
 
 # define the labellings

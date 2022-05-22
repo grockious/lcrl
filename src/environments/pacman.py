@@ -4,7 +4,7 @@ from operator import add
 import numpy as np
 
 
-class Pacman:
+class PacMan:
     """
     Arcade Pacman modelled as an MDP
 

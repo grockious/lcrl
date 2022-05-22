@@ -1,3 +1,3 @@
-from src.environments.mars_rover_continuous_action import MarsRover
+from src.environments.MarsRoverCA import MarsRover
 
 mars_rover = MarsRover()

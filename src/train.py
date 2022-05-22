@@ -1,8 +1,8 @@
 import os
 import random
 import numpy as np
-from src.environments.slippery_grid import SlipperyGrid
-from src.automata.ldba import LDBA
+from src.environments.SlipperyGrid import SlipperyGrid
+from src.automata.LDBA import LDBA
 from src.core.lcrl_core import LCRL
 from src.animator.animator import animate
 import matplotlib.pyplot as plt
@@ -19,8 +19,8 @@ def train(
         iteration_num_max=4000,
         discount_factor=0.95,
         learning_rate=0.9,
-        nfq_replay_buffer_size=100,
-        ddpg_replay_buffer_size=50000,
+        nfq_replay_buffer_size=50,
+        ddpg_replay_buffer_size=100000,
         decaying_learning_rate=False,
         epsilon=0.1,
         save_dir='./results',
@@ -32,18 +32,20 @@ def train(
     if algorithm == 'ql':
         learning_task.train_ql(episode_num, iteration_num_max)
         import dill
-        from src.environments.mars_rover_discrete_action import MarsRover
+        from src.environments.MarsRoverDA import MarsRover
     elif algorithm == 'nfq':
         learning_task.train_nfq(episode_num, iteration_num_max, nfq_replay_buffer_size)
         import dill
-        from src.environments.mars_rover_discrete_action import MarsRover
+        from src.environments.MarsRoverDA import MarsRover
     elif algorithm == 'ddpg':
         learning_task.train_ddpg(episode_num, iteration_num_max, ddpg_replay_buffer_size)
         import dill
         import tensorflow as tf
-        from src.environments.mars_rover_continuous_action import MarsRover
+        tf.get_logger().setLevel('ERROR')
+        from src.environments.MarsRoverCA import MarsRover
     else:
-        raise NotImplementedError('New learning algorithms will be added to lcrl_core.py soon.')
+        raise NotImplementedError('New learning algorithms will be added to LCRL soon. The selected algorithm is not '
+                                  'implemented yet.')
 
     if average_window == -1:
         average_window = int(0.03 * episode_num)
@@ -70,29 +72,29 @@ def train(
     if test:
         print('testing...')
         number_of_tests = 100
-        number_of_successes = 0
+        learning_task.successes_in_test = 0
         for tt in range(number_of_tests):
-            learning_task.MDP.reset()
-            learning_task.LDBA.reset()
+            MDP.reset()
+            LDBA.reset()
             # check if MDP current_state is a list or ndarray:
-            if type(learning_task.MDP.current_state) == np.ndarray:
+            if type(MDP.current_state) == np.ndarray:
                 ndarray = True
-                test_path = [learning_task.MDP.current_state.tolist()]
+                test_path = [MDP.current_state.tolist()]
             else:
                 ndarray = False
-                test_path = [learning_task.MDP.current_state]
+                test_path = [MDP.current_state]
             iteration_num = 0
-            while learning_task.LDBA.accepting_frontier_set and iteration_num < iteration_num_max \
-                    and learning_task.LDBA.automaton_state != -1:
+            while LDBA.accepting_frontier_set and iteration_num < iteration_num_max \
+                    and LDBA.automaton_state != -1:
                 iteration_num += 1
                 if ndarray:
                     if algorithm == "nfq":
                         current_state = MDP.current_state.tolist() + [LDBA.automaton_state]
                     if algorithm == "ddpg":
+                        prev_state = MDP.current_state
                         current_state = MDP.current_state.tolist() + [LDBA.automaton_state]
-                        prev_state = np.array(current_state[0:2].copy())
                 else:
-                    current_state = learning_task.MDP.current_state + [learning_task.LDBA.automaton_state]
+                    current_state = MDP.current_state + [LDBA.automaton_state]
 
                 if learning_task.epsilon_transitions_exists:
                     product_MDP_action_space = learning_task.action_space_augmentation()
@@ -128,13 +130,13 @@ def train(
                             next_MDP_state = next_MDP_state.tolist()
                 else:
                     # action space bounds
-                    lower_bound = -1
-                    upper_bound = 1
+                    lower_bound = -1.0
+                    upper_bound = 1.0
                     tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
                     sampled_actions = tf.squeeze(learning_task.Q[current_state[-1]](tf_prev_state))
                     sampled_actions = sampled_actions.numpy()
                     legal_action = np.clip(sampled_actions, lower_bound, upper_bound)
-                    action = np.squeeze(legal_action)
+                    action = [np.squeeze(legal_action)]
                     if learning_task.epsilon_transitions_exists and \
                             LDBA.automaton_state in LDBA.epsilon_transitions.keys() and \
                             random.random() > 0.5:
@@ -147,25 +149,24 @@ def train(
                         epsilon_transition_taken = False
                     # product MDP modification (for more details refer to https://bit.ly/LCRL_CDC_2019)
                     if epsilon_transition_taken:
-                        next_MDP_state = MDP.current_state.tolist()
                         next_automaton_state = LDBA.step(epsilon_action)
+                        next_MDP_state = prev_state
                     else:
-                        next_MDP_state = MDP.step(action).tolist()
+                        state = MDP.step(action)
+                        next_MDP_state = state.tolist()
                         next_automaton_state = LDBA.step(MDP.state_label(next_MDP_state))
 
-                    state = np.array(next_MDP_state.copy())
-
                     # product MDP: synchronise the automaton with MDP
-                    current_state = next_MDP_state + [next_automaton_state]
+                    prev_state = state.copy()
 
                 test_path.append(next_MDP_state)
                 if not epsilon_transition_taken:
-                    learning_task.LDBA.accepting_frontier_function(next_automaton_state)
+                    LDBA.accepting_frontier_function(next_automaton_state)
 
-                if not learning_task.LDBA.accepting_frontier_set:
-                    number_of_successes += 1
+                if not LDBA.accepting_frontier_set:
+                    learning_task.successes_in_test += 1
 
-        print('success rate in testing: ' + str(100 * number_of_successes / number_of_tests) + '%')
+        print('success rate in testing: ' + str(100 * learning_task.successes_in_test / number_of_tests) + '%')
 
     if isinstance(MDP, SlipperyGrid) and test:
         # plt.plot(learning_task.path_length, c='royalblue')
