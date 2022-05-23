@@ -44,7 +44,7 @@ Sample training commands can be found under the `./scripts` directory. LCRL cons
 
 &nbsp;
 <p align="center">
-    <img width="650" src="assets/lcrl_overview.png">
+    <img width="650" src="https://raw.githubusercontent.com/grockious/lcrl/master/assets/lcrl_overview.png">
 </p>
 <!--- https://i.imgur.com/uH481P0.png --->
 &nbsp;
