@@ -10,6 +10,10 @@ policies for unknown, continuous-state-action Markov Decision Processes (MDPs) u
 off-the-shelf RL algorithm to synthesise policies that yield traces which probabilistically satisfy the LTL property. LCRL produces policies that are certified to satisfy the given LTL property with maximum probability.
 
 ## Publications
+LCRL Tool Paper:
+* Hasanbeig, M., Kroening, D., Abate, A., "LCRL: Certified Policy Synthesis via Logically-Constrained Reinforcement Learning", QEST, 2022. [[PDF (soon)]]()
+
+LCRL Foundations:
 * Hasanbeig, M. , Jeppu, N. Y., Abate, A., Melham, T., Kroening, D., "DeepSynth: Automata Synthesis for Automatic Task Segmentation in Deep Reinforcement Learning", AAAI Conference on Artificial Intelligence, 2021. [[PDF]](https://arxiv.org/pdf/1911.10244.pdf)
 * Hasanbeig, M. , Abate, A. and Kroening, D., "Cautious Reinforcement Learning with Logical Constraints", International Conference on Autonomous Agents and Multi-agent Systems, 2020. [[PDF]](http://ifaamas.org/Proceedings/aamas2020/pdfs/p483.pdf)
 * Hasanbeig, M. , Kroening, D. and Abate, A., "Deep Reinforcement Learning with Temporal Logics", International Conference on Formal Modeling and Analysis of Timed Systems, 2020. [[PDF]](https://link.springer.com/content/pdf/10.1007%2F978-3-030-57628-8_1.pdf)
@@ -117,16 +121,15 @@ LDBA.accepting_frontier_function(state)
 to update the accepting frontier set. This method is already included in the class `./src/automata/ldba.py`, thus for a custom `LDBA` object you need to only instance this class and specify the `reset()` and `step(label)` methods.  
 
 ## Reference
-Please use this bibtex entry if you want to cite this repository in your publication:
+Please cite our tool paper if you use LCRL in your publications:
 
 ```
-@misc{lcrl_repo,
-  author = {Mohammadhosein Hasanbeig, Alessandro Abate, and Daniel Kroening},
-  title = {Logically-Constrained Reinforcement Learning Code Repository},
-  year = {2020},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/grockious/lcrl}},
+@inproceedings{lcrl_tool,
+title={{LCRL}: Certified Policy Synthesis via Logically-Constrained Reinforcement Learning},
+author={Hasanbeig, Mohammadhosein and Kroening, Daniel and Abate, Alessandro},
+booktitle={International Conference on Quantitative Evaluation of SysTems},
+year={2022},
+organization={Springer}
 }
 ```
 
