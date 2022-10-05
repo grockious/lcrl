@@ -11,7 +11,7 @@ off-the-shelf RL algorithm to synthesise policies that yield traces which probab
 
 ## Publications
 LCRL Tool Paper:
-* Hasanbeig, M., Kroening, D., Abate, A., "LCRL: Certified Policy Synthesis via Logically-Constrained Reinforcement Learning", QEST, 2022. [[PDF (soon)]]()
+* Hasanbeig, M., Kroening, D., Abate, A., "LCRL: Certified Policy Synthesis via Logically-Constrained Reinforcement Learning", QEST, 2022. [[PDF (soon)]](https://arxiv.org/pdf/2209.10341.pdf)
 
 LCRL Foundations:
 * Hasanbeig, M. , Jeppu, N. Y., Abate, A., Melham, T., Kroening, D., "DeepSynth: Automata Synthesis for Automatic Task Segmentation in Deep Reinforcement Learning", AAAI Conference on Artificial Intelligence, 2021. [[PDF]](https://arxiv.org/pdf/1911.10244.pdf)
