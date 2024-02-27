@@ -1,4 +1,4 @@
-from src.automata.LDBA import LDBA
+from src.automata.ldba import LDBA
 
 # an example automaton for "wood then tool_shed" or "F (wood & XF (tool_shed))"
 # only the automaton "step" function and the "accepting_sets" attribute need to be specified.

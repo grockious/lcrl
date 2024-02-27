@@ -1,4 +1,4 @@
-from src.automata.LDBA import LDBA
+from src.automata.ldba import LDBA
 
 # only the automaton "step" function and the "accepting_sets" attribute need to be specified.
 # "accepting_sets" is a list of lists for Generalised Büchi Accepting condition (https://bit.ly/ldba_paper)

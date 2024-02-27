@@ -1,4 +1,4 @@
-from src.automata.LDBA import LDBA
+from src.automata.ldba import LDBA
 
 # an example automaton for "visiting goal1 and goal2 infinitely often" or
 # "GF goal1 & GF goal2"

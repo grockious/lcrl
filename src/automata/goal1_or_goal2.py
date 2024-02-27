@@ -1,4 +1,4 @@
-from src.automata.LDBA import LDBA
+from src.automata.ldba import LDBA
 
 # an example automaton for "goal1 or goal2 while avoiding unsafe" or "(FG goal1 | FG goal2) & G !unsafe"
 # automaton image is available in "./assets" or "https://i.imgur.com/gyDED4O.png"

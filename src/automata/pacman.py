@@ -1,4 +1,4 @@
-from src.automata.LDBA import LDBA
+from src.automata.ldba import LDBA
 
 # an example automaton for "(food1 then food2) or (food2 then food1) while avoiding ghost" or
 # "(F (food1 & F food2) || F (food2 & F food1)) & G !ghost"

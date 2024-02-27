@@ -1,4 +1,4 @@
-from src.automata.LDBA import LDBA
+from src.automata.ldba import LDBA
 
 # an example automaton for "goal1 then goal2 then goal 3 then goal 4 while avoiding unsafe" or
 # "F (goal1 & XF (goal2 & XF (goal3 & XF goal4))) & G !unsafe"
