@@ -11,19 +11,12 @@ import numpy as np
 # create a SlipperyGrid object
 gridworld_3 = SlipperyGrid(shape=[5, 5], initial_state=[2, 0], slip_probability=0.05)
 
+# defines the labelling image
+labels = np.empty([gridworld_3.shape[0], gridworld_3.shape[1]], dtype=object)
+labels[0:5, 0:5] = 'safe'
+labels[1:4, 2] = 'obstacle'
+labels[0:2, 3:5] = 'goal1'
+labels[3:5, 3:5] = 'goal2'
 
-# "state_label" function outputs the label of input state (input: state, output: string label)
-def state_label(self, state):
-    # defines the labelling image
-    labels = np.empty([gridworld_3.shape[0], gridworld_3.shape[1]], dtype=object)
-    labels[0:5, 0:5] = 'safe'
-    labels[1:4, 2] = 'obstacle'
-    labels[0:2, 3:5] = 'goal1'
-    labels[3:5, 3:5] = 'goal2'
-
-    # returns the label associated with input state
-    return labels[state[0], state[1]]
-
-
-# now override the step function
-SlipperyGrid.state_label = state_label.__get__(gridworld_3, SlipperyGrid)
+# override the labels
+gridworld_3.labels = labels
