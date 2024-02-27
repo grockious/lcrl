@@ -2,7 +2,7 @@ import os
 import random
 import numpy as np
 from src.environments.SlipperyGrid import SlipperyGrid
-from src.automata.LDBA import LDBA
+from src.automata.ldba import LDBA
 from src.core.lcrl_core import LCRL
 from src.animator.animator import animate
 import matplotlib.pyplot as plt
