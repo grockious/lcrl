@@ -1,9 +1,9 @@
 # import train module
-from src.train import train
+from src.lcrl.train import train
 # either create an automata object or import built-in ones
-from src.automata.minecraft_1 import minecraft_1
+from src.lcrl.automata.minecraft_1 import minecraft_1
 # either create an environment object or import built-in ones
-from src.environments.minecraft import minecraft
+from src.lcrl.environments.minecraft import minecraft
 
 if __name__ == "__main__":
     MDP = minecraft
