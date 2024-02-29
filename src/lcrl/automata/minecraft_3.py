@@ -1,4 +1,4 @@
-from src.automata.ldba import LDBA
+from lcrl.automata.ldba import LDBA
 
 # an example automaton for "wood then grass then iron then tool_shed" or
 # "F (wood & XF (grass & XF (iron & XF tool_shed)))"

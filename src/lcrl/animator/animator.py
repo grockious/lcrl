@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tqdm
 import imageio
-from src.environments.SlipperyGrid import SlipperyGrid
+from lcrl.environments.SlipperyGrid import SlipperyGrid
 
 
 def animate(mdp, executed_policy, dir_to_save, labels_value, cmap, norm, patches):

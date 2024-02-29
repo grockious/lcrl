@@ -1,3 +1,3 @@
-from src.environments.MarsRoverDA import MarsRover
+from lcrl.environments.MarsRoverDA import MarsRover
 
 mars_rover = MarsRover()

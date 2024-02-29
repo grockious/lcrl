@@ -1,10 +1,10 @@
 import os
 import random
 import numpy as np
-from src.environments.SlipperyGrid import SlipperyGrid
-from src.automata.ldba import LDBA
-from src.core.lcrl_core import LCRL
-from src.animator.animator import animate
+from lcrl.environments.SlipperyGrid import SlipperyGrid
+from lcrl.automata.ldba import LDBA
+from lcrl.core.lcrl_core import LCRL
+from lcrl.animator.animator import animate
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib import colors
@@ -32,17 +32,17 @@ def train(
     if algorithm == 'ql':
         learning_task.train_ql(episode_num, iteration_num_max)
         import dill
-        from src.environments.MarsRoverDA import MarsRover
+        from lcrl.environments.MarsRoverDA import MarsRover
     elif algorithm == 'nfq':
         learning_task.train_nfq(episode_num, iteration_num_max, nfq_replay_buffer_size)
         import dill
-        from src.environments.MarsRoverDA import MarsRover
+        from lcrl.environments.MarsRoverDA import MarsRover
     elif algorithm == 'ddpg':
         learning_task.train_ddpg(episode_num, iteration_num_max, ddpg_replay_buffer_size)
         import dill
         import tensorflow as tf
         tf.get_logger().setLevel('ERROR')
-        from src.environments.MarsRoverCA import MarsRover
+        from lcrl.environments.MarsRoverCA import MarsRover
     else:
         raise NotImplementedError('New learning algorithms will be added to LCRL soon. The selected algorithm is not '
                                   'implemented yet.')

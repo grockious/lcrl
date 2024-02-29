@@ -1,4 +1,4 @@
-from src.automata.ldba import LDBA
+from lcrl.automata.ldba import LDBA
 
 # an example automaton for "goal1" or "F goal1"
 # only the automaton "step" function and the "accepting_sets" attribute need to be specified.

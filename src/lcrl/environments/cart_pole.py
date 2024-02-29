@@ -1,3 +1,3 @@
-from src.environments.CartPole import CartPole
+from lcrl.environments.CartPole import CartPole
 
 cart_pole = CartPole()

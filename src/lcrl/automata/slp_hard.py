@@ -1,4 +1,4 @@
-from src.automata.ldba import LDBA
+from lcrl.automata.ldba import LDBA
 
 # an example automaton for "goal1 then goal2 then goal3 then goal4" or
 # "F (goal1 & XF (goal2 & XF (goal3 & XF goal4)))"

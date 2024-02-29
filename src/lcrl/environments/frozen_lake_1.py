@@ -1,4 +1,4 @@
-from src.environments.SlipperyGrid import SlipperyGrid
+from lcrl.environments.SlipperyGrid import SlipperyGrid
 import numpy as np
 
 # A modified version of OpenAI Gym FrozenLake
