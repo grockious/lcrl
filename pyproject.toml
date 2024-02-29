@@ -10,6 +10,9 @@ authors = [
 ]
 description = "Logically-Constrained Reinforcement Learning"
 readme = "README.md"
+keywords = [
+"rl", "logic", "environment", "agent"
+]
 requires-python = ">=3.8"
 dependencies = [
     "numpy",
