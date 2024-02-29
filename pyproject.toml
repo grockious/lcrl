@@ -5,27 +5,23 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "lcrl"
 version = "0.0.7.1"
-authors = [
-  { name="Hosein Hasanbeig", email="hosein.hasanbeig@icloud.com" },
-]
+authors = [{ name = "Hosein Hasanbeig", email = "hosein.hasanbeig@icloud.com" }]
 description = "Logically-Constrained Reinforcement Learning"
 readme = "README.md"
-keywords = [
-"rl", "logic", "environment", "agent"
-]
+keywords = ["rl", "logic", "environment", "agent"]
 requires-python = ">=3.8"
 dependencies = [
-    "numpy",
-    "matplotlib",
-    "dill>=0.3.2",
-    "imageio",
-    "tqdm",
-    "tensorflow>=2",
+  "numpy",
+  "matplotlib",
+  "dill>=0.3.2",
+  "imageio",
+  "tqdm",
+  "tensorflow>=2",
 ]
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
 
 [project.urls]

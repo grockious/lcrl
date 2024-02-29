@@ -1,9 +1,9 @@
 # import train module
-from src.train import train
+from src.lcrl.train import train
 # either create an automata object or import built-in ones
-from src.automata.mars_rover_1_3 import mars_rover_1_3
+from src.lcrl.automata.mars_rover_1_3 import mars_rover_1_3
 # either create an environment object or import built-in ones
-from src.environments.mars_rover_3_4 import mars_rover
+from src.lcrl.environments.mars_rover_3_4 import mars_rover
 
 if __name__ == "__main__":
     MDP = mars_rover
