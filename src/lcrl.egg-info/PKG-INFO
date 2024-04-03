@@ -1,10 +1,52 @@
+Metadata-Version: 2.1
+Name: lcrl
+Version: 0.0.9.2
+Summary: Logically-Constrained Reinforcement Learning
+Home-page: https://github.com/grockious/lcrl
+Author: Hosein Hasanbeig
+Author-email: Hosein Hasanbeig <hosein.hasanbeig@icloud.com>
+License: The MIT License
+        
+        Copyright (c) 2020, Mohammadhosein Hasanbeig, University of Oxford
+        All rights reserved.
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in
+        all copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+        THE SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/grockious/lcrl
+Keywords: rl,logic,environment,agent
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: dill>=0.3.2
+Requires-Dist: imageio
+Requires-Dist: tqdm
+Requires-Dist: tensorflow>=2
+
 <p align="center">
     <img width="250" src="https://raw.githubusercontent.com/grockious/lcrl/master/assets/lcrl.png">
 </p>
 <!--- https://i.imgur.com/6Rf2GcE.png --->
-
-![PyPI - License](https://img.shields.io/pypi/l/lcrl)
-![PyPI - Version](https://img.shields.io/pypi/v/lcrl)
 
 # LCRL
 Logically-Constrained Reinforcement Learning (LCRL) is a model-free reinforcement learning framework to synthesise
@@ -47,7 +89,7 @@ pip3 install git+https://github.com/grockious/lcrl.git
 ## Usage
 #### Training an RL agent under an LTL property
 
-Sample training commands can be found under the `./scripts` directory. LCRL consists of three main classes `MDP`, the `LDBA` automaton and the core `train`ing algorithm. Inside LCRL, the `MDP` state and the `LDBA` state are automatically synchronised, resulting in an on-the-fly product MDP structure.
+Sample training commands can be found under the `./scripts` directory. LCRL consists of three main classes `MDP`, `LDBA` and the `LCRL` core trainer. Inside LCRL the `MDP` state and the `LDBA` state are synchronised, resulting in an on-the-fly product MDP structure.
 
 &nbsp;
 <p align="center">
@@ -56,29 +98,29 @@ Sample training commands can be found under the `./scripts` directory. LCRL cons
 <!--- https://i.imgur.com/uH481P0.png --->
 &nbsp;
 
-Over the product MDP, LCRL shapes a reward function based on the `LDBA` object. An optimal stationary Markov policy synthesised by LCRL on the product
+On the product MDP, LCRL automatically shapes a reward function based on the `LDBA` object. An optimal stationary Markov policy synthesised by LCRL on the product
 MDP is guaranteed to induce a finite-memory policy on the original MDP that maximises the probability of satisfying the given LTL property. 
 
-The package includes a number of pre-built `MDP` and `LDBA` class objects. A set of instances of the `MDP` and `LDBA` classes
-are available in `lcrl.environments` and `lcrl.automata`, respectively. As an example, to train an agent for `minecraft-t1` (Table 2 in [the tool paper](https://arxiv.org/pdf/2209.10341.pdf)) run:
+The package includes a number of pre-built `MDP` and `LDBA` class objects. For examples of `MDP` and `LDBA` classes
+please refer to `./src/environments` and `./src/automata` respectively. For instance, to train an agent for `minecraft-t1` run:
 
 ```
 python3
 ```
 
 ```python
->>>  # import LCRL code trainer module
->>> from lcrl.train import train
->>>  # import the pre-built LDBA for minecraft-t1
->>> from lcrl.automata.minecraft_1 import minecraft_1
->>>  # import the pre-built MDP for minecraft-t1
->>> from lcrl.environments.minecraft import minecraft
->>>
->>> LDBA = minecraft_1
->>> MDP = minecraft
->>>
->>>  # train the agent
->>> task = train(MDP, LDBA,
+>> >  # import LCRL code trainer module
+>> > from src.train import train
+>> >  # import the pre-built LDBA for minecraft-t1
+>> > from src.automata.minecraft_1 import minecraft_1
+>> >  # import the pre-built MDP for minecraft-t1
+>> > from src.lcrl import minecraft
+>> >
+>> > LDBA = minecraft_1
+>> > MDP = minecraft
+>> >
+>> >  # train the agent
+>> > task = train(MDP, LDBA,
                   algorithm='ql',
                   episode_num=500,
                   iteration_num_max=4000,
@@ -87,10 +129,10 @@ python3
                   )
 ```
 
-## Applying LCRL to a custom black-box MDP and a custom LTL property
+## Applying LCRL to a black-box MDP and custom LTL property
 #### - MDP:
 LCRL can be connected to a black-box MDP object that is fully unknown to
-the tool. This includes the size of the state space as LCRL automatically keeps track of the visited states. Following the OpenAI's convention, the MDP object, call it `MDP`, should at
+the tool. This includes the size of the state space as LCRL automatically keeps track of visited states. The MDP object, call it `MDP`, should at
 least have the following methods:
 ```
 MDP.reset()
@@ -108,7 +150,7 @@ to output the label of `state`.
 #### - LTL:
 The LTL property has to be converted to an LDBA, which is a finite-state machine.
 An excellent tool for this is OWL, which you can [try online](https://owl.model.in.tum.de/try/).
-The synthesised LDBA can be used as an object of the class `lcrl.automata.ldba`.  
+The synthesised LDBA can be used as an object of the class `./src/automata/ldba.py`.  
 
 The constructed LDBA, call it `LDBA`, is expected to offer the following methods:
 ```
@@ -122,25 +164,18 @@ to change the state of the automaton upon reading `label`,
 ```
 LDBA.accepting_frontier_function(state)
 ```
-to update the accepting frontier set. This method is already included in the class `lcrl.automata.ldba`, thus for a custom `LDBA` object you only need to instance this class and specify the `reset()` and `step(label)` methods.  
+to update the accepting frontier set. This method is already included in the class `./src/automata/ldba.py`, thus for a custom `LDBA` object you need to only instance this class and specify the `reset()` and `step(label)` methods.  
 
 ## Reference
-Please cite our tool paper and this repository if you use LCRL in your publications:
+Please cite our tool paper if you use LCRL in your publications:
 
 ```
-@inproceedings{lcrl_tool_paper,
+@inproceedings{lcrl_tool,
 title={{LCRL}: Certified Policy Synthesis via Logically-Constrained Reinforcement Learning},
-author={Hasanbeig, Hosein and Kroening, Daniel and Abate, Alessandro},
+author={Hasanbeig, Mohammadhosein and Kroening, Daniel and Abate, Alessandro},
 booktitle={International Conference on Quantitative Evaluation of SysTems},
 year={2022},
 organization={Springer}
-}
-```
-```
-@misc{lcrl_repo,
-  title={Logically-Constrained Reinforcement Learning Code Repository},
-  author={Hasanbeig, Hosein and Kroening, Daniel and Abate, Alessandro},
-  year={2022}
 }
 ```
 

@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='lcrl',
-    version='0.0.7',
+    version='0.0.9.2',
     author="Hosein Hasanbeig",
     author_email="hosein.hasanbeig@icloud.com",
     keywords='rl, logic, environment, agent',
@@ -13,7 +13,8 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url='https://github.com/grockious/lcrl',
     description='Logically-Constrained Reinforcement Learning',
-    packages=setuptools.find_packages(),
+    package_dir={"": "src"},
+    packages=setuptools.find_packages(where="src"),
     include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -22,11 +23,11 @@ setuptools.setup(
     ],
     python_requires='>=3.8',
     install_requires=[
+        'tensorflow==2.7.0',
         'numpy',
         'matplotlib',
         'dill>=0.3.2',
         'imageio',
-        'tqdm',
-        'tensorflow>=2'
+        'tqdm'
     ]
 )
