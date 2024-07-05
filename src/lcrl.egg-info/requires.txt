@@ -1,6 +1,0 @@
-numpy
-matplotlib
-dill>=0.3.2
-imageio
-tqdm
-tensorflow>=2
