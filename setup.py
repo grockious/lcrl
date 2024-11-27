@@ -23,7 +23,7 @@ setuptools.setup(
     ],
     python_requires='>=3.8',
     install_requires=[
-        'tensorflow==2.7.0',
+        'tensorflow==2.11.1',
         'numpy',
         'matplotlib',
         'dill>=0.3.2',
